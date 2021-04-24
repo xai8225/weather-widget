@@ -1,10 +1,8 @@
 import VueRouter from 'vue-router'
 
-import MainPage from '../pages/MainPage'
-import AllFilmsPage from '../pages/AllFilmsPage'
-import FilmPage from '../pages/FilmPage'
-import NotFound from '../pages/404'
-import FilmsLayout from '../pages/FilmsLayout'
+import Home from '../components/Home';
+import Weather from "../components/Weather";
+import NotFound from '../components/NotFound';
 
 export default new VueRouter({
   mode: 'history',
@@ -12,39 +10,21 @@ export default new VueRouter({
     {
       path: '/',
       name: 'main',
-      component: MainPage
+      component: Home,
+      meta: {
+        title: 'Home Page',
+      }
     },
     {
-      path: '/films',
-      name: 'filmsLayout',
-      component: FilmsLayout,
-      children: [
-        {
-          path: '',
-          name: 'films',
-          component: AllFilmsPage
-        },
-        {
-          path: ':id',
-          name: 'filmPage',
-          component: FilmPage,
-          beforeEnter: (to, from, next) => {
-            if(localStorage.getItem('user')) {
-              next()
-            } else {
-              next({ name: 'films' })
-            }
-          }
-        },
-        {
-          path: '*/*',
-          redirect: { name: 'films' }
-        },
-      ]
+      path: '/weather/:city',
+      name: 'weather',
+      component: Weather,
+      title: 'Weather Page',
     },
     {
       path: '*',
       name: 'notFound',
+      title: '404 Page',
       component: NotFound
     },
   ]

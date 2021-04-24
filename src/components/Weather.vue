@@ -1,58 +1,110 @@
 <template>
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
+    <v-card
+        :loading="loading"
+        class="mx-auto my-12 custom-card"
+        max-width="374"
+        outlined
+        shaped
+        v-bind:class="{ error: error }"
+    >
+      <v-img
+          :src="require('../assets/weather.jpg')"
           contain
-          height="200"
-        />
-      </v-col>
-      <v-col>
-        <v-text-field
-          v-model="message"
-          append-outer-icon="fa-paper-plane"
-          filled
-          clear-icon="fa-trash"
-          clearable
-          label="Message"
-          type="text"
-          @click:append-outer="sendMessage"
-          @click:clear="clearMessage"
-        ></v-text-field>
-      </v-col>
-    </v-row>
+      />
+      <template v-if="info">
+        <v-card-text>
+          <div class="text-h5">
+            Weather in {{ $route.params.city.toUpperCase() }}
+          </div>
+          <v-divider class="my-1"></v-divider>
+          <div class="temperature-section">
+            <div class="div">
+              <div class="text-h3">
+                <v-icon>fa-thermometer</v-icon>
+                {{ info.main.temp }}°C
+              </div>
+              <v-row class="mx-0 my-1">
+                Feels like: {{ info.main.feels_like }}°C
+              </v-row>
+            </div>
+            <div>
+              <div class="text-h5 my-1">
+                Min/max:
+              </div>
+              <v-row class="mx-0 my-1">
+                {{ info.main.temp_min }}°C / {{ info.main.temp_max }}°C
+              </v-row>
+            </div>
+          </div>
+          <v-divider class="my-4"></v-divider>
+          <div class="d-flex justify-space-between">
+            <v-col>
+              <div class="text-h6">
+                <v-icon>fa-tint</v-icon>
+                {{ info.main.humidity }}%
+              </div>
+            </v-col>
+            <v-col>
+              <div class="text-h6">
+                <v-icon>fa-sort-amount-desc</v-icon>
+                {{ info.main.pressure }}
+              </div>
+            </v-col>
+          </div>
+        </v-card-text>
+      </template>
+      <template v-if="error">
+        <div class="my-1 mx-1 heading">
+          {{ error }}
+        </div>
+      </template>
+    </v-card>
+    <div class="text-center">
+      <v-btn
+          elevation="2"
+          @click="$router.push('/')"
+      >
+        Go for another search
+      </v-btn>
+    </div>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  name: "HelloWorld",
+  name: "Weather",
 
   data: () => ({
-    message: "london",
+    info: null,
+    loading: true,
+    error: null,
   }),
 
-  methods: {
-    toggleMarker() {
-      this.marker = !this.marker;
-    },
-    sendMessage() {
-      console.log('sss');
-      this.$router.push({ name: 'weather'})
-    },
-    clearMessage() {
-      this.message = "";
-    },
-    resetIcon() {
-      this.iconIndex = 0;
-    },
-    changeIcon() {
-      this.iconIndex === this.icons.length - 1
-        ? (this.iconIndex = 0)
-        : this.iconIndex++;
-    },
-  },
+  mounted() {
+    axios
+        .get(`https://api.openweathermap.org/data/2.5/weather?q=${this.$route.params.city}&units=metric&APPID=534eeb133c09d8eef0cf161b7ca975d3`)
+        .then(response => {
+          this.info = response.data;
+          this.loading = false;
+          this.error = null;
+        }).catch(error => {
+          this.loading = false;
+          this.error = error.response.data.message;
+        });
+  }
 };
 </script>
+
+<style scoped lang="scss">
+.custom-card {
+  background: linear-gradient(to bottom right, #3cc0fe 20%, #0066ff);
+  color: #fff;
+}
+
+.temperature-section {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

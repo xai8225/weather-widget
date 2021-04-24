@@ -1,42 +1,51 @@
 <template>
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
-      <v-col>
-        <v-text-field
+    <div class="text-h4 text-center">
+      Type city name and press enter or click search button
+    </div>
+    <v-card
+        class="mx-auto my-12 search-card"
+        max-width="374"
+        outlined
+        shaped
+    >
+      <v-text-field
           v-model="message"
-          append-outer-icon="fa-paper-plane"
           filled
+          hide-details="auto"
           clear-icon="fa-trash"
           clearable
-          label="Message"
+          label="City"
           type="text"
-          @click:append-outer="sendMessage"
+          @keyup.enter="searchWeather"
           @click:clear="clearMessage"
-        ></v-text-field>
-      </v-col>
-    </v-row>
+      ></v-text-field>
+    </v-card>
+    <div class="text-center">
+      <v-btn
+          tile
+          color="success"
+          @click="searchWeather"
+      >
+        <v-icon left>
+          fa-paper-plane
+        </v-icon>
+        Search
+      </v-btn>
+    </div>
   </v-container>
 </template>
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "Home",
 
   data: () => ({
-    message: "london",
+    message: "London",
   }),
 
   methods: {
-    sendMessage() {
-      console.log('sss');
+    searchWeather() {
       this.$router.push(`/weather/${this.message}`)
     },
     clearMessage() {
@@ -45,3 +54,9 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.search-card {
+  overflow: hidden;
+}
+</style>
