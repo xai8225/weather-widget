@@ -12,14 +12,15 @@ const $route = {
 
 describe('Weather.vue', () => {
   it('renders correctly', async () => {
-    const message = 'new message'
+    const mockMethod = jest.spyOn(Weather.methods, 'getWeather')
     const wrapper = shallowMount(Weather, {
-      propsData: { message },
       mocks: {
         $route
       }
     })
-    console.log(wrapper.html());
-    expect(wrapper.html().includes('Weather in Kharkiv')).toBe(true)
+
+    expect(mockMethod).toHaveBeenCalled();
+    expect(wrapper.html().includes('Go for another search')).toBe(true);
+    expect(wrapper.vm.cityName).toBe('KHARKIV')
   })
 })

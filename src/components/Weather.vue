@@ -6,7 +6,7 @@
         max-width="374"
         outlined
         shaped
-        v-bind:class="{ error: error }"
+        :class="{ error: error }"
     >
       <v-img
           :src="require('../assets/weather.jpg')"
@@ -15,7 +15,7 @@
       <template v-if="info">
         <v-card-text>
           <div class="text-h5">
-            Weather in {{ $route.params.city.toUpperCase() }}
+            Weather in {{ cityName }}
           </div>
           <v-divider class="my-1"></v-divider>
           <div class="temperature-section">
@@ -72,7 +72,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import getRequestURL from "../api/api";
+import axios from "axios";
 export default {
   name: "Weather",
 
@@ -83,17 +84,29 @@ export default {
   }),
 
   mounted() {
-    axios
-        .get(`https://api.openweathermap.org/data/2.5/weather?q=${this.$route.params.city}&units=metric&APPID=534eeb133c09d8eef0cf161b7ca975d3`)
-        .then(response => {
-          this.info = response.data;
-          this.loading = false;
-          this.error = null;
-        }).catch(error => {
-          this.loading = false;
-          this.error = error.response.data.message;
-        });
-  }
+    this.getWeather();
+  },
+
+  computed: {
+    cityName: function () {
+      return this.$route.params.city.toUpperCase();
+    }
+  },
+
+  methods: {
+    getWeather() {
+      axios
+          .get(getRequestURL(this.$route.params.city))
+          .then(response => {
+            this.info = response.data;
+            this.loading = false;
+            this.error = null;
+          }).catch(error => {
+        this.loading = false;
+        this.error = error.response.data.message;
+      });
+    }
+  },
 };
 </script>
 
